@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ReadThreadsTest extends TestCase
 {
-    use RefreshDatabase;
 
     public function setUp()
     {
@@ -16,16 +15,24 @@ class ReadThreadsTest extends TestCase
     }
 
     /** @test */
-    public function a_user_can_view_all_threads()
+    public function a_user_can_read_all_threads()
     {
-        $response = $this->get('/threads');
-        $response->assertSee($this->thread->title);
+        $this->get('/threads')
+ 				->assertSee($this->thread->title);
     }
 
     /** @test */
-    public function a_user_can_view_single_thread()
+    public function a_user_can_read_single_thread()
     {
-        $response = $this->get('/threads/' . $this->thread->id);
-        $response->assertSee($this->thread->title);
+        $this->get($this->thread->path())
+        		->assertSee($this->thread->title);
+    }
+
+    /** @test */
+    public function a_user_can_read_replies_about_the_thead()
+    {
+		$reply = factory('App\Reply')->create(['thread_id' => $this->thread->id]);
+		$this->get($this->thread->path())
+				->assertSee($reply->body);
     }
 }
